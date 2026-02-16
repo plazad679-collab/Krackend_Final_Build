@@ -1,0 +1,13 @@
+node_modules/
+dist-build/
+dist/win-unpacked/
+*.log
+.DS_Store
+.env
+RESUMEN_PREMIUM.md
+ESTADO_ACTUAL.md
+PREMIUM_FEATURES_SUMMARY.md
+TESTING_RESULTS.md
+*.zip
+*.bat
+*.vbs

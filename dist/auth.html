@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krackend Premium - Authentication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0318 0%, #1a0033 25%, #2d004d 50%, #1a0033 75%, #0f0318 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientFlow {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: drift 25s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(40px, 40px);
+            }
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.3), transparent);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: 7s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-50px, 50px) scale(0.9);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 480px;
+            padding: 50px 45px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 80px rgba(168, 85, 247, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: fadeInScale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-section h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .logo-section p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 35px;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 18px;
+            padding-right: 50px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 400;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: #a855f7;
+            box-shadow:
+                0 0 0 4px rgba(168, 85, 247, 0.08),
+                0 8px 16px rgba(168, 85, 247, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .input-group input:valid {
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        /* Password Toggle Button */
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: color 0.3s;
+            font-size: 18px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-toggle:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Password Strength Meter */
+        .password-strength {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .password-strength.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.4s ease;
+            border-radius: 4px;
+        }
+
+        .strength-fill.weak {
+            width: 33%;
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+
+        .strength-fill.medium {
+            width: 66%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        .strength-text {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .strength-text.weak {
+            color: #f87171;
+        }
+
+        .strength-text.medium {
+            color: #fbbf24;
+        }
+
+        .strength-text.strong {
+            color: #34d399;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 17px;
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                0 10px 30px rgba(168, 85, 247, 0.3),
+                0 0 0 0 rgba(168, 85, 247, 0);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 15px 40px rgba(168, 85, 247, 0.4),
+                0 0 0 4px rgba(168, 85, 247, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .message {
+            padding: 15px 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .skip-btn {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .skip-btn button {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+
+        .skip-btn button:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Caps Lock Warning */
+        .caps-warning {
+            display: none;
+            color: #fbbf24;
+            font-size: 12px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .caps-warning.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <div class="logo-section">
+            <h1>KRACKEND</h1>
+            <p>Premium Gaming Experience</p>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+            <button class="tab-btn" onclick="switchTab('register')">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form" class="form-container active">
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="your@email.com" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="login-password" placeholder="Enter your password" required
+                            autocomplete="current-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('login-password')">
+                            👁️
+                        </button>
+                    </div>
+                    <div id="login-caps-warning" class="caps-warning">⚠️ Caps Lock is ON</div>
+                </div>
+                <button type="submit" class="btn" id="login-btn">
+                    <span>Login</span>
+                </button>
+            </form>
+            <div class="skip-btn">
+                <button onclick="skipAuth()">Continue as Guest (Free Tier)</button>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form" class="form-container">
+            <form onsubmit="handleRegister(event)">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="register-username" placeholder="Choose a username" required minlength="3"
+                        autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="register-email" placeholder="your@email.com" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="register-password" placeholder="Create a password (min 6 chars)"
+                            required minlength="6" oninput="checkPasswordStrength(this.value)"
+                            autocomplete="new-password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-password')">
+                            👁️
+                        </button>
+                    </div>
+                    <div id="register-caps-warning" class="caps-warning">⚠️ Caps Lock is ON</div>
+                    <div id="password-strength" class="password-strength">
+                        <div class="strength-bar">
+                            <div id="strength-fill" class="strength-fill"></div>
+                        </div>
+                        <div id="strength-text" class="strength-text"></div>
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="register-btn">
+                    <span>Create Account</span>
+                </button>
+            </form>
+            <div class="skip-btn">
+                <button onclick="skipAuth()">Continue as Guest (Free Tier)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://62.171.191.116:3000/api';
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.form-container').forEach(form => form.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(`${tab}-form`).classList.add('active');
+
+            // Clear message when switching tabs
+            hideMessage();
+        }
+
+        // Password Toggle
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const btn = event.target;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        // Password Strength Checker
+        function checkPasswordStrength(password) {
+            const strengthMeter = document.getElementById('password-strength');
+            const strengthFill = document.getElementById('strength-fill');
+            const strengthText = document.getElementById('strength-text');
+
+            if (password.length === 0) {
+                strengthMeter.classList.remove('active');
+                return;
+            }
+
+            strengthMeter.classList.add('active');
+
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/\d/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            strengthFill.className = 'strength-fill';
+            strengthText.className = 'strength-text';
+
+            if (strength <= 2) {
+                strengthFill.classList.add('weak');
+                strengthText.classList.add('weak');
+                strengthText.textContent = '⚠️ Weak password';
+            } else if (strength <= 3) {
+                strengthFill.classList.add('medium');
+                strengthText.classList.add('medium');
+                strengthText.textContent = '⚡ Medium strength';
+            } else {
+                strengthFill.classList.add('strong');
+                strengthText.classList.add('strong');
+                strengthText.textContent = '✓ Strong password';
+            }
+        }
+
+        // Caps Lock Detection
+        document.addEventListener('keyup', (e) => {
+            const capsWarningLogin = document.getElementById('login-caps-warning');
+            const capsWarningRegister = document.getElementById('register-caps-warning');
+
+            if (e.getModifierState && e.getModifierState('CapsLock')) {
+                capsWarningLogin.classList.add('show');
+                capsWarningRegister.classList.add('show');
+            } else {
+                capsWarningLogin.classList.remove('show');
+                capsWarningRegister.classList.remove('show');
+            }
+        });
+
+        // Message Helpers
+        function showSuccess(msg) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = msg;
+            messageEl.className = 'message success show';
+        }
+
+        function showError(msg) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = msg;
+            messageEl.className = 'message error show';
+        }
+
+        function hideMessage() {
+            const messageEl = document.getElementById('message');
+            messageEl.classList.remove('show');
+        }
+
+        // Enhanced IPC Bridge Discovery (Multiversal Communication)
+        async function getBridge() {
+            // 1. Standard window.electronAPI
+            if (window.electronAPI) return window.electronAPI;
+
+            // 2. Legacy window.electron
+            if (window.electron && window.electron.ipcRenderer) {
+                return {
+                    saveAuth: (d) => window.electron.ipcRenderer.invoke('save-auth', d),
+                    closeAuthWindow: () => window.electron.ipcRenderer.invoke('close-auth-window')
+                };
+            }
+
+            // 3. Direct require fallback (nodeIntegration: true)
+            if (typeof require !== 'undefined') {
+                try {
+                    const { ipcRenderer } = require('electron');
+                    return {
+                        saveAuth: (d) => ipcRenderer.invoke('save-auth', d),
+                        closeAuthWindow: () => ipcRenderer.invoke('close-auth-window')
+                    };
+                } catch (e) {
+                    console.error('Direct require failed:', e);
+                }
+            }
+            return null;
+        }
+
+        // Login Handler
+        async function handleLogin(event) {
+            event.preventDefault();
+            hideMessage();
+
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+
+            btn.innerHTML = '<div class="btn-loading"><div class="spinner"></div><span>Logging in...</span></div>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess('✓ Login successful! Launching app...');
+
+                    const api = await getBridge();
+                    if (api) {
+                        await api.saveAuth({
+                            token: data.token,
+                            tier: data.tier,
+                            user: data.user
+                        });
+                        setTimeout(() => api.closeAuthWindow(), 1000);
+                    } else {
+                        showError('Bridge not found. Please contact support.');
+                        btn.innerHTML = '<span>Login</span>';
+                        btn.disabled = false;
+                    }
+                } else {
+                    showError(data.message || 'Login failed');
+                    btn.innerHTML = '<span>Login</span>';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Connection error. Is the API running?');
+                btn.innerHTML = '<span>Login</span>';
+                btn.disabled = false;
+            }
+        }
+
+        // Register Handler
+        async function handleRegister(event) {
+            event.preventDefault();
+            hideMessage();
+
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const btn = document.getElementById('register-btn');
+
+            btn.innerHTML = '<div class="btn-loading"><div class="spinner"></div><span>Creating account...</span></div>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess('✓ Account created! Logging you in...');
+
+                    const api = await getBridge();
+                    if (api) {
+                        await api.saveAuth({
+                            token: data.token,
+                            tier: data.tier,
+                            user: data.user
+                        });
+                        setTimeout(() => api.closeAuthWindow(), 1000);
+                    } else {
+                        showError('Bridge not found. Please contact support.');
+                        btn.innerHTML = '<span>Create Account</span>';
+                        btn.disabled = false;
+                    }
+                } else {
+                    showError(data.message || 'Registration failed');
+                    btn.innerHTML = '<span>Create Account</span>';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                showError('Connection error. Is the API running?');
+                btn.innerHTML = '<span>Create Account</span>';
+                btn.disabled = false;
+            }
+        }
+
+        // Skip Auth (Guest Mode)
+        async function skipAuth() {
+            const api = await getBridge();
+            if (api) {
+                await api.saveAuth({
+                    token: null,
+                    tier: 'free',
+                    user: { username: 'Guest' }
+                });
+                api.closeAuthWindow();
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+{
+    "name": "krackend-premium",
+    "productName": "Krackend Premium",
+    "version": "1.2.0",
+    "description": "The Ultimate Game Enhancement Suite",
+    "main": "src/main.js",
+    "author": "Krackend Games",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "start": "electron .",
+        "build": "electron-builder build --win --publish never"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.91.1",
+        "7zip-bin": "^5.2.0",
+        "electron-updater": "^6.7.3",
+        "jszip": "^3.10.1",
+        "node-7z": "^3.0.0",
+        "webtorrent": "^2.8.5"
+    },
+    "devDependencies": {
+        "electron": "^31.0.0",
+        "electron-builder": "^24.13.3"
+    },
+    "build": {
+        "appId": "com.krackend.premium",
+        "productName": "Krackend Premium",
+        "copyright": "Copyright © 2026 Krackend Games",
+        "directories": {
+            "output": "dist-build",
+            "buildResources": "build-resources"
+        },
+        "files": [
+            "dist/**/*",
+            "src/**/*",
+            "package.json",
+            "app-update.yml"
+        ],
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "icon": "dist/logo.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "Krackend Premium",
+            "uninstallDisplayName": "Krackend Premium (Uninstall)",
+            "installerIcon": "dist/logo.ico",
+            "uninstallerIcon": "dist/logo.ico"
+        }
+    }
+}

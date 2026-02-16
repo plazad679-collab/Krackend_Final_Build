@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Krackend Premium</title>
+  <style>
+    body {
+      background-color: #0c0a09;
+      color: #fafaf9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .background-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+      filter: blur(40px);
+      z-index: 0;
+    }
+
+    .container {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .logo {
+      width: 140px;
+      height: auto;
+      margin-bottom: 40px;
+      filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
+      animation: float 4s infinite ease-in-out;
+    }
+
+    .brand-name {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      background: linear-gradient(to bottom right, #fff, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    #status {
+      font-size: 13px;
+      font-weight: 400;
+      color: #a8a29e;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+    }
+
+    .loader-bar {
+      width: 200px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loader-progress {
+      position: absolute;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+      animation: slide 1.5s infinite ease-in-out;
+    }
+
+    @keyframes slide {
+      0% {
+        left: -40%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="background-glow"></div>
+  <div class="container">
+    <img src="./logo.png" alt="Krackend Premium" class="logo">
+    <div class="brand-name">Krackend Premium</div>
+    <div class="status-line">
+      <div class="loader-bar">
+        <div class="loader-progress"></div>
+      </div>
+      <p id="status">Initialisant les systèmes...</p>
+    </div>
+  </div>
+  <script>
+    const { ipcRenderer } = require('electron');
+    const statusEl = document.getElementById('status');
+    const loaderEl = document.getElementById('loader');
+
+    ipcRenderer.on('update-message', (event, message) => {
+      statusEl.textContent = message;
+      // Hide loader when starting the app, show it for other messages
+      if (message.toLowerCase().includes('démarrage')) {
+        loaderEl.style.display = 'none';
+      } else {
+        loaderEl.style.display = 'inline-block';
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="./vite.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Krackend Premium</title>
+  <style>
+    /* Premium Purple Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6d28d9;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #7c3aed;
+    }
+
+    /* Standard Layout Reset */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      /* Let internal app containers handle scrolling */
+      background: #000;
+    }
+
+    #root {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      /* App usually has its own scrollable main content area */
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-ZcL8yOtX.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DiqHOMWM.css">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    // KRACKEND UI CLEANUP & BRANDING ENFORCER
+    (function () {
+      const BRAND_NAME = 'Krackend Premium';
+      document.title = BRAND_NAME;
+
+      const observer = new MutationObserver((mutations) => {
+        if (document.title !== BRAND_NAME) document.title = BRAND_NAME;
+
+        // Perform deep text replacement to catch hardcoded legacy strings
+        const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while (node = walk.nextNode()) {
+          const content = node.nodeValue;
+          if (content.includes('Distill') || content.includes('6.0.0')) {
+            node.nodeValue = content.replace(/Distill/g, 'Krackend Premium').replace(/6\.0\.0/g, '1.2.0');
+          }
+        }
+
+        const candidates = document.querySelectorAll('button, div[role="button"], li, span, h2, h3, p');
+
+        candidates.forEach(el => {
+          if (!el) return;
+          const text = el.textContent ? el.textContent.trim() : '';
+
+          if (text === 'Account Settings') {
+            if (el.tagName === 'BUTTON' || el.parentElement.tagName === 'LI' || el.classList.contains('cursor-pointer')) {
+              el.style.display = 'none';
+              if (el.parentElement && el.parentElement.tagName === 'LI') {
+                el.parentElement.style.display = 'none';
+              }
+            }
+          }
+
+          if ((text === 'Log In' || text === 'Sign Up') && (el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'BUTTON')) {
+            el.style.display = 'none';
+            const form = el.closest('form');
+            if (form) form.style.display = 'none';
+            const card = el.closest('.cyber-card') || el.closest('.bg-neutral-900');
+            if (card && card.querySelector('input[type="password"]')) {
+              card.style.display = 'none';
+            }
+          }
+        });
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
+</body>
+
+</html>
