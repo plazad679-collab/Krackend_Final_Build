@@ -957,7 +957,7 @@ ipcMain.handle('close-auth-window', async () => {
 });
 
 ipcMain.handle('open-upgrade-page', async () => {
-  shell.openExternal('https://discord.gg/3jmZn2cZ'); // Open Discord for premium support
+  shell.openExternal('https://discord.gg/9ndyjaM4'); // Open Discord for premium support
 });
 
 // ============================================
