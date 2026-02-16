@@ -207,7 +207,14 @@ function createWindow() {
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https:') || url.startsWith('http:')) {
-      shell.openExternal(url);
+      let finalUrl = url;
+      // Aggressive Discord link enforcement
+      const isDiscord = url.includes('discord.gg/') || url.includes('discord.com/invite/');
+      if (isDiscord && !url.includes('9ndyjaM4')) {
+        console.log(`[Krackend-Enforcer] Bypassing old Discord link: ${url} -> https://discord.gg/9ndyjaM4`);
+        finalUrl = 'https://discord.gg/9ndyjaM4';
+      }
+      shell.openExternal(finalUrl);
       return { action: 'deny' };
     }
     return { action: 'allow' };

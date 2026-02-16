@@ -14,7 +14,14 @@ const electronBridge = {
     },
     shell: {
         openPath: (path) => shell.openPath(path),
-        openExternal: (url) => shell.openExternal(url),
+        openExternal: (url) => {
+            let finalUrl = url;
+            const isDiscord = url.includes('discord.gg/') || url.includes('discord.com/invite/');
+            if (isDiscord && !url.includes('9ndyjaM4')) {
+                finalUrl = 'https://discord.gg/9ndyjaM4';
+            }
+            return shell.openExternal(finalUrl);
+        },
         showItemInFolder: (fullPath) => shell.showItemInFolder(fullPath)
     }
 };

@@ -58,6 +58,9 @@
       const BRAND_NAME = 'Krackend Premium';
       document.title = BRAND_NAME;
 
+      // KRACKEND UI CLEANUP & BRANDING ENFORCER
+      const CORRECT_DISCORD = 'https://discord.gg/9ndyjaM4';
+
       const observer = new MutationObserver((mutations) => {
         if (document.title !== BRAND_NAME) document.title = BRAND_NAME;
 
@@ -70,6 +73,15 @@
             node.nodeValue = content.replace(/Distill/g, 'Krackend Premium').replace(/6\.0\.0/g, '1.2.0');
           }
         }
+
+        // AGGRESSIVE DISCORD LINK HIJACKING
+        document.querySelectorAll('a').forEach(a => {
+          const isDiscord = a.href.includes('discord.gg/') || a.href.includes('discord.com/invite/');
+          if (isDiscord && !a.href.includes('9ndyjaM4')) {
+            console.log('[DEBUG] Intercepted old Discord link:', a.href);
+            a.href = CORRECT_DISCORD;
+          }
+        });
 
         const candidates = document.querySelectorAll('button, div[role="button"], li, span, h2, h3, p');
 
@@ -99,6 +111,41 @@
       });
 
       observer.observe(document.body, { childList: true, subtree: true });
+
+      // GLOBAL CLICK INTERCEPTOR (Just in case it's JS-triggered)
+      document.addEventListener('click', (e) => {
+        const target = e.target.closest('button, a, div[role="button"]');
+        if (target) {
+          const text = target.textContent.trim().toLowerCase();
+          const href = (target.href || '').toLowerCase();
+
+          const isDiscordText = text.includes('discord') || text.includes('support') || text.includes('premium');
+          const isDiscordLink = href.includes('discord.gg/') || href.includes('discord.com/invite/');
+
+          if (isDiscordText || isDiscordLink) {
+            console.log('[DEBUG-ENFORCER] Discord click detected on:', target);
+
+            // If it's the correct link, let it flow (but ensure it doesn't get hijacked by old logic)
+            if (href.includes('9ndyjaM4')) return;
+
+            // BLOCK EVERYTHING ELSE
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            console.log('[DEBUG-ENFORCER] FORCING CORRECT DISCORD LINK');
+
+            // Use the most reliable method available
+            const correctUrl = 'https://discord.gg/9ndyjaM4';
+
+            if (window.electron && window.electron.shell) {
+              window.electron.shell.openExternal(correctUrl);
+            } else if (window.electronAPI && window.electronAPI.openExternal) {
+              window.electronAPI.openExternal(correctUrl);
+            } else {
+              window.open(correctUrl, '_blank');
+            }
+          }
+        }
+      }, true); // Use Capturing phase to catch it BEFORE the app does
     })();
   </script>
 </body>
